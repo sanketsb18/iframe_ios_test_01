@@ -1,0 +1,88 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@0.1/dist/pretty-print-json.css />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .checkout-form-wrapper {
+            width: 60%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #9b9b9b;
+            overflow: hidden;
+        }
+
+        input {
+            padding: 7px 5px;
+            border-radius: 5px;
+            border: 1px solid #9b9b9b;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="checkout-form-wrapper">
+        <table cellpadding="5" style="width: 100%; margin: auto" border="0">
+            <tr>
+                <td>Environment</td>
+                <td><input type="text" name="env" id="env" value="dev">
+                </td>
+            </tr>
+            <tr>
+                <td>Merchant Key</td>
+                <td><input type="text" name="merchant_key" id="merchant_key" value="dummy">
+                </td>
+            </tr> 
+            <tr>
+                <td>Access Key</td>
+                <td>
+                    <input type="text" id="access_key" value="119555990f6001b68a85bcbe4df74fda0b153f483b707884a79a475990b43cc5"/>
+                </td>
+            </tr>
+        </table>
+        <input id="eb-checkout" value="Easebuzz Checkout" type="button"
+            style="margin-top: 80px; margin: auto; display: block; width: 150px">
+    </div>
+    <div class="checkout-form-wrapper" style="margin-top: 100px;min-height: 220px;">
+        <h3 id="response-header" style="padding: 10px 0; text-align: center; border-bottom: 1px solid #ddd; margin: 0;">
+            Payment Response
+        </h3>
+        <pre id="payment-response-area" style="padding: 10px;word-break: break-word;"></pre>
+    </div>
+</body>
+
+</html>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src=https://cdn.jsdelivr.net/npm/pretty-print-json@0.1/dist/pretty-print-json.min.js> </script> <!-- LOCAL -->
+<script src="https://ebz-static.s3.ap-south-1.amazonaws.com/easecheckout/v2.0.0/easebuzz-checkout-v2.dev.min.js"></script>
+<!-- <script src="../dist/easebuzz-checkout-v2.min.js"></script> -->
+
+<script>
+    $(window).ready(function () {
+        $('#eb-checkout').click(function () {
+            var key = $('#merchant_key').val();
+            var access_key = $('#access_key').val();
+            var env = $('#env').val();
+
+            var options = {
+                access_key: access_key,
+                // theme: theme,
+                onResponse: function (response) {
+                    $('#response-header').html("Payment Response - <span style='color: green'>" + (response || {}).status + "</span>")
+                    $('#payment-response-area').html(prettyPrintJson.toHtml(response || {}));
+                }
+            }
+            var easebuzzCheckout = new EasebuzzCheckout(key, env);
+            easebuzzCheckout.initiatePayment(options);
+        });
+    });
+</script>
